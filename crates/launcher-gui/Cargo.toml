@@ -16,3 +16,5 @@ tokio.workspace = true
 futures.workspace = true
 once_cell.workspace = true
 open = "5"
+unicode-segmentation = "1"
+uuid.workspace = true
