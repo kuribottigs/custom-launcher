@@ -1,0 +1,39 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/launcher-core",
+    "crates/launcher-cli",
+    "crates/launcher-gui",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/kuribottigs/custom-launcher"
+
+[workspace.dependencies]
+launcher-core = { path = "crates/launcher-core" }
+
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "rustls-tls-native-roots"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "process", "time", "sync", "io-util"] }
+futures = "0.3"
+sha1 = "0.10"
+hex = "0.4"
+md5 = "0.7"
+uuid = { version = "1", features = ["v4", "serde"] }
+dirs = "6"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+once_cell = "1"
+clap = { version = "4", features = ["derive"] }
+
+[profile.dev]
+# gpui is very slow to compile/link without this
+debug = "line-tables-only"
+
+[profile.release]
+lto = "thin"
