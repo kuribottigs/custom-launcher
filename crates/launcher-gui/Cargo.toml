@@ -1,0 +1,20 @@
+[package]
+name = "launcher-gui"
+version.workspace = true
+edition = "2024"
+license.workspace = true
+
+[[bin]]
+name = "oxide-launcher"
+path = "src/main.rs"
+
+[dependencies]
+launcher-core.workspace = true
+gpui = "0.2"
+anyhow.workspace = true
+tokio.workspace = true
+futures.workspace = true
+once_cell.workspace = true
+open = "5"
+unicode-segmentation = "1"
+uuid.workspace = true
