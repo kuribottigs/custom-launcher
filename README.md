@@ -25,6 +25,8 @@ crates/
 
 Rust 1.85 以降（edition 2024）が必要です。
 
+ビルド済みバイナリ（Linux / Windows / macOS）は、main ブランチへのプッシュごとに GitHub Actions が生成します（Actions タブの各実行の Artifacts からダウンロード）。`v*` タグを付けると GitHub Release にも自動添付されます。
+
 ### Linux の依存パッケージ
 
 gpui のビルドに以下が必要です（Ubuntu/Debian の例）:
