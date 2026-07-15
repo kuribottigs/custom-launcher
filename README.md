@@ -4,8 +4,7 @@ Rust 製の Minecraft カスタムランチャーです。[Modrinth App](https:/
 
 ## 主な機能
 
-- **Microsoft アカウントログイン** — デバイスコードフロー（MSA → Xbox Live → XSTS → Minecraft Services）。リフレッシュトークンによる自動セッション更新付き
-- **オフラインアカウント** — バニラ互換のオフライン UUID を生成（`OfflinePlayer:<名前>` の MD5）
+- **Microsoft アカウントログイン** — デバイスコードフロー（MSA → Xbox Live → XSTS → Minecraft Services）。リフレッシュトークンによる自動セッション更新付き。ゲーム所有権（エンタイトルメント）を確認してからログインを完了します
 - **バージョン管理** — Mojang の version manifest からリリース/スナップショットを取得し、クライアント本体・ライブラリ・アセットを SHA-1 検証付きで並列ダウンロード
 - **Fabric 対応** — Fabric meta API からローダープロファイルを取得してバニラとマージ
 - **Modrinth 連携** — MOD の検索と、インスタンスの `mods/` フォルダへのワンクリック導入
@@ -59,13 +58,12 @@ Minecraft の認証 API を利用するには、自分の Azure アプリケー�
    - GUI: 「設定」タブ →「Microsoft ログイン用クライアントID」
    - CLI/共通: 環境変数 `MSA_CLIENT_ID`、または `settings.json` の `msa_client_id`
 
-> クライアント ID 未設定でも**オフラインアカウント**での起動は可能です（正規のアカウント所持者向けの検証用途を想定）。
+> 本ランチャーはオフライン（非正規）アカウントでのプレイをサポートしません。起動には Minecraft: Java Edition を所有する Microsoft アカウントでのログインが必要です（EULA 準拠）。クライアント ID 未設定の間も `oxide launch <名前> --dry-run` による起動コマンドの確認は可能です。
 
 ## 使い方（CLI）
 
 ```sh
 oxide login                 # Microsoftログイン（デバイスコード）
-oxide login-offline Steve   # オフラインアカウント追加
 oxide accounts              # アカウント一覧
 
 oxide versions              # バージョン一覧

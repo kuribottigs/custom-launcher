@@ -7,7 +7,7 @@ use gpui::{
 };
 
 use launcher_core::auth::store::AccountStore;
-use launcher_core::auth::{self, Account, AccountKind};
+use launcher_core::auth::{self, AccountKind};
 use launcher_core::config::{Paths, Settings};
 use launcher_core::instance::{self, Instance, LoaderConfig, LoaderKind};
 use launcher_core::minecraft::manifest;
@@ -49,7 +49,6 @@ pub struct RootView {
     searching: bool,
 
     // Accounts tab
-    offline_name_input: Entity<TextInput>,
     device_code: Option<auth::microsoft::DeviceCode>,
     logging_in: bool,
 
@@ -71,7 +70,6 @@ impl RootView {
         let name_input = cx.new(|cx| TextInput::new(cx, "インスタンス名"));
         let version_input = cx.new(|cx| TextInput::new(cx, "バージョン (例: 1.21.4)"));
         let search_input = cx.new(|cx| TextInput::new(cx, "MODを検索 (例: sodium)"));
-        let offline_name_input = cx.new(|cx| TextInput::new(cx, "プレイヤー名"));
         let client_id_input = cx.new(|cx| TextInput::new(cx, "Azure クライアントID"));
         let java_path_input = cx.new(|cx| TextInput::new(cx, "Javaパス (空欄で自動検出)"));
         let memory_input = cx.new(|cx| TextInput::new(cx, "メモリ (MiB)"));
@@ -104,7 +102,6 @@ impl RootView {
             search_input,
             results: Vec::new(),
             searching: false,
-            offline_name_input,
             device_code: None,
             logging_in: false,
             client_id_input,
@@ -367,20 +364,6 @@ impl RootView {
     }
 
     // ----- Accounts -----
-
-    fn add_offline_account(&mut self, cx: &mut Context<Self>) {
-        let name = self.offline_name_input.read(cx).text().trim().to_string();
-        if name.is_empty() {
-            self.set_status("プレイヤー名を入力してください", cx);
-            return;
-        }
-        self.accounts.upsert(Account::offline(&name));
-        let _ = self.accounts.save(&self.paths);
-        self.offline_name_input
-            .update(cx, |input, cx| input.set_text("", cx));
-        self.set_status(format!("オフラインアカウント '{name}' を追加しました"), cx);
-        cx.notify();
-    }
 
     fn start_microsoft_login(&mut self, cx: &mut Context<Self>) {
         if self.logging_in {
@@ -880,26 +863,6 @@ impl RootView {
                 )
             });
 
-        let offline_panel = self
-            .panel()
-            .child(
-                div()
-                    .text_size(px(15.))
-                    .text_color(rgb(theme::TEXT))
-                    .child("オフラインアカウント"),
-            )
-            .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .gap_3()
-                    .child(div().flex_grow().child(self.offline_name_input.clone()))
-                    .child(
-                        self.button("add-offline", "追加", false)
-                            .on_click(cx.listener(|this, _, _, cx| this.add_offline_account(cx))),
-                    ),
-            );
-
         let mut list = div().flex().flex_col().gap_2();
         for (index, account) in self.accounts.accounts.clone().into_iter().enumerate() {
             let active = self.accounts.active == Some(account.uuid);
@@ -967,7 +930,6 @@ impl RootView {
             .gap_4()
             .child(self.section_title("アカウント"))
             .child(ms_panel)
-            .child(offline_panel)
             .child(list)
     }
 

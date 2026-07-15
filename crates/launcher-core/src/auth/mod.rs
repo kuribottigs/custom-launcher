@@ -37,6 +37,11 @@ pub struct Account {
 impl Account {
     /// Create an offline account. The UUID matches vanilla's offline-mode
     /// derivation (`UUID.nameUUIDFromBytes("OfflinePlayer:" + name)`).
+    ///
+    /// This exists for the automated test suite and for dry-run command
+    /// previews only; neither the CLI nor the GUI exposes a way to create
+    /// or launch with offline accounts (EULA compliance — playing requires
+    /// a Microsoft account that owns the game).
     pub fn offline(name: &str) -> Self {
         Self {
             kind: AccountKind::Offline,

@@ -23,8 +23,6 @@ struct Cli {
 enum Command {
     /// Microsoftアカウントでログイン（デバイスコード方式）
     Login,
-    /// オフラインアカウントを追加
-    LoginOffline { name: String },
     /// 登録済みアカウントを表示
     Accounts,
     /// 使用するアカウントを選択
@@ -120,17 +118,10 @@ async fn main() -> Result<()> {
             store.upsert(account);
             store.save(&paths)?;
         }
-        Command::LoginOffline { name } => {
-            let account = Account::offline(&name);
-            println!("オフラインアカウントを追加: {} ({})", account.username, account.uuid);
-            let mut store = AccountStore::load(&paths)?;
-            store.upsert(account);
-            store.save(&paths)?;
-        }
         Command::Accounts => {
             let store = AccountStore::load(&paths)?;
             if store.accounts.is_empty() {
-                println!("アカウントが登録されていません。`oxide login` または `oxide login-offline <名前>` を実行してください。");
+                println!("アカウントが登録されていません。`oxide login` を実行してください。");
             }
             for account in &store.accounts {
                 let active = if Some(account.uuid) == store.active { "*" } else { " " };
@@ -200,8 +191,12 @@ async fn main() -> Result<()> {
         Command::Launch { name, dry_run } => {
             let inst = instance::load_instance(&paths, &name)?;
             let mut store = AccountStore::load(&paths)?;
-            let Some(account) = store.active_account().cloned() else {
-                bail!("アカウントがありません。`oxide login` または `oxide login-offline <名前>` を実行してください。");
+            // Dry runs only print the would-be command line and never start
+            // the game, so they work without an account (placeholder values).
+            let account = match store.active_account().cloned() {
+                Some(account) => account,
+                None if dry_run => Account::offline("Player"),
+                None => bail!("アカウントがありません。`oxide login` を実行してください。"),
             };
             let mut account = account;
             if account.kind == auth::AccountKind::Microsoft && !account.token_valid() {
